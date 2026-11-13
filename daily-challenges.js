@@ -1,6 +1,6 @@
 "use strict";
 
-// STORAGE HELPERS
+// SHARED STORAGE HELPERS
 
 function saveData(key, value) {
     try {
@@ -14,15 +14,19 @@ function saveData(key, value) {
 
 function loadData(key, fallbackValue) {
     try {
-        const savedData = localStorage.getItem(key);
+        const savedValue = localStorage.getItem(key);
 
-        return savedData === null
+        return savedValue === null
             ? fallbackValue
-            : JSON.parse(savedData);
+            : JSON.parse(savedValue);
     } catch (error) {
         console.error(`Unable to load ${key}:`, error);
         return fallbackValue;
     }
+}
+
+function updateStatus(message) {
+    document.querySelector("#general-status").textContent = message;
 }
 
 // DAY 1: THEME PERSISTENCE
@@ -40,20 +44,19 @@ function applyTheme(theme) {
 
 function initializeTheme() {
     const savedTheme = loadData("daily-theme", "light");
-    const validTheme =
-        savedTheme === "dark" ? "dark" : "light";
+    const theme = savedTheme === "dark" ? "dark" : "light";
 
-    applyTheme(validTheme);
+    applyTheme(theme);
 }
 
 themeToggle.addEventListener("click", () => {
     const currentTheme = document.body.dataset.theme;
-    const newTheme = currentTheme === "light" ? "dark" : "light";
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
 
     if (saveData("daily-theme", newTheme)) {
         applyTheme(newTheme);
     } else {
-        themeStatus.textContent = "Unable to save theme preference.";
+        themeStatus.textContent = "Unable to save your theme preference.";
     }
 });
 
@@ -64,6 +67,7 @@ initializeTheme();
 const searchForm = document.querySelector("#search-form");
 const searchInput = document.querySelector("#search-input");
 const searchHistory = document.querySelector("#search-history");
+const searchHistorySection = document.querySelector("#search-history-section");
 const searchResult = document.querySelector("#search-result");
 
 let recentSearches = loadData("recent-searches", []);
@@ -75,20 +79,23 @@ if (!Array.isArray(recentSearches)) {
 function displaySearchHistory() {
     searchHistory.replaceChildren();
 
+    searchHistorySection.hidden = recentSearches.length === 0;
+
     recentSearches.forEach((searchTerm) => {
-        const listItem = document.createElement("li");
-        const historyButton = document.createElement("button");
+        const item = document.createElement("li");
+        const button = document.createElement("button");
 
-        historyButton.type = "button";
-        historyButton.textContent = searchTerm;
+        button.type = "button";
+        button.textContent = searchTerm;
 
-        historyButton.addEventListener("click", () => {
+        button.addEventListener("click", () => {
             searchInput.value = searchTerm;
             performSearch(searchTerm);
+            searchHistorySection.open = false;
         });
 
-        listItem.append(historyButton);
-        searchHistory.append(listItem);
+        item.append(button);
+        searchHistory.append(item);
     });
 }
 
@@ -111,12 +118,13 @@ function performSearch(searchTerm) {
         displaySearchHistory();
         searchResult.textContent = `You searched for: ${cleanedTerm}`;
     } else {
-        searchResult.textContent = "Unable to save search history.";
+        searchResult.textContent = "Unable to save your search history.";
     }
 }
 
 searchForm.addEventListener("submit", (event) => {
     event.preventDefault();
+
     performSearch(searchInput.value);
     searchInput.value = "";
 });
@@ -133,30 +141,26 @@ const autosaveKey = "daily-form-data";
 
 function collectFormData() {
     return {
-        name: autosaveForm.elements.name.value,
-        email: autosaveForm.elements.email.value,
-        message: autosaveForm.elements.message.value
+        name: autosaveForm.elements.namedItem("name").value,
+        email: autosaveForm.elements.namedItem("email").value,
+        message: autosaveForm.elements.namedItem("message").value
     };
 }
 
 function restoreFormData() {
-    const savedFormData = loadData(autosaveKey, null);
+    const savedData = loadData(autosaveKey, null);
 
-    if (!savedFormData || typeof savedFormData !== "object") {
-        return;
-    }
+    if (!savedData || typeof savedData !== "object") return;
 
-    autosaveForm.elements.name.value = savedFormData.name || "";
-    autosaveForm.elements.email.value = savedFormData.email || "";
-    autosaveForm.elements.message.value = savedFormData.message || "";
+    autosaveForm.elements.namedItem("name").value = savedData.name || "";
+    autosaveForm.elements.namedItem("email").value = savedData.email || "";
+    autosaveForm.elements.namedItem("message").value = savedData.message || "";
 
     autosaveStatus.textContent = "Previous form data restored.";
 }
 
 function autoSaveForm() {
-    const formData = collectFormData();
-
-    if (saveData(autosaveKey, formData)) {
+    if (saveData(autosaveKey, collectFormData())) {
         autosaveStatus.textContent =
             `Last saved: ${new Date().toLocaleTimeString()}`;
     } else {
@@ -166,22 +170,22 @@ function autoSaveForm() {
 
 restoreFormData();
 
-// Automatically save form data every five seconds.
+// Save every five seconds and whenever the user changes a field.
 const autosaveInterval = setInterval(autoSaveForm, 5000);
+
+autosaveForm.addEventListener("input", autoSaveForm);
 
 autosaveForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
-    if (!autosaveForm.reportValidity()) {
-        return;
-    }
-
-    clearInterval(autosaveInterval);
+    if (!autosaveForm.reportValidity()) return;
 
     try {
         localStorage.removeItem(autosaveKey);
 
         autosaveForm.reset();
+        clearInterval(autosaveInterval);
+
         formResult.textContent = "Form submitted successfully.";
         autosaveStatus.textContent = "Saved form data cleared.";
     } catch (error) {
@@ -198,104 +202,103 @@ autosaveForm.addEventListener("reset", () => {
 
 const refactorForm = document.querySelector("#refactor-form");
 
-function validateRefactoring(originalCode, improvedCode) {
-    if (!originalCode.trim() || !improvedCode.trim()) {
-        throw new Error("Both original and improved code are required.");
-    }
+const refactorOriginal = document.querySelector("#refactor-original");
+const refactorImproved = document.querySelector("#refactor-improved");
+const refactorReflection = document.querySelector("#refactor-reflection");
 
-    return true;
+const refactorCheckboxes = refactorForm.querySelectorAll(
+    'input[name="refactor-check"]'
+);
+
+function collectRefactorData() {
+    return {
+        original: refactorOriginal.value,
+        improved: refactorImproved.value,
+        reflection: refactorReflection.value,
+        checklist: Array.from(refactorCheckboxes).map(
+            (checkbox) => checkbox.checked
+        )
+    };
+}
+
+function restoreRefactorData() {
+    const savedData = loadData("day-4-refactor", null);
+
+    if (!savedData) return;
+
+    refactorOriginal.value = savedData.original || "";
+    refactorImproved.value = savedData.improved || "";
+    refactorReflection.value = savedData.reflection || "";
+
+    refactorCheckboxes.forEach((checkbox, index) => {
+        checkbox.checked = Boolean(savedData.checklist?.[index]);
+    });
 }
 
 refactorForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
-    const originalCode =
-        document.querySelector("#refactor-original").value;
+    const data = collectRefactorData();
 
-    const improvedCode =
-        document.querySelector("#refactor-improved").value;
+    if (!data.original.trim() || !data.improved.trim()) {
+        updateStatus("Enter both your original and improved code.");
+        return;
+    }
 
-    try {
-        validateRefactoring(originalCode, improvedCode);
-
-        saveData("day-4-original", originalCode);
-        saveData("day-4-improved", improvedCode);
-
-        const reflection =
-            document.querySelector("#refactor-reflection").value;
-
-        saveData("day-4-reflection", reflection);
-
-        document.querySelector("#general-status").textContent =
-            "Day 4 refactoring work saved.";
-    } catch (error) {
-        console.error("Refactoring validation failed:", error);
-
-        document.querySelector("#general-status").textContent =
-            error.message;
+    if (saveData("day-4-refactor", data)) {
+        updateStatus("Day 4 refactoring work saved.");
+    } else {
+        updateStatus("Unable to save your refactoring work.");
     }
 });
 
-// DAY 5: WEATHER DASHBOARD CODE REVIEW
+restoreRefactorData();
+
+// DAY 5: CODE REVIEW
 
 const reviewForm = document.querySelector("#review-form");
-const reviewImprovements =
-    document.querySelector("#review-improvements");
+const reviewImprovements = document.querySelector("#review-improvements");
+
+const reviewCheckboxes = reviewForm.querySelectorAll(
+    'input[name="review-check"]'
+);
+
+function collectReviewData() {
+    return {
+        checklist: Array.from(reviewCheckboxes).map(
+            (checkbox) => checkbox.checked
+        ),
+        improvements: reviewImprovements.value
+    };
+}
+
+function restoreReviewData() {
+    const savedData = loadData("day-5-review", null);
+
+    if (!savedData) return;
+
+    reviewCheckboxes.forEach((checkbox, index) => {
+        checkbox.checked = Boolean(savedData.checklist?.[index]);
+    });
+
+    reviewImprovements.value = savedData.improvements || "";
+}
 
 reviewForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
-    const improvements = reviewImprovements.value.trim();
+    const data = collectReviewData();
 
-    if (!improvements) {
-        document.querySelector("#general-status").textContent =
-            "Please write your improvement list.";
+    if (!data.improvements.trim()) {
+        updateStatus("Write your improvement list before submitting.");
         return;
     }
 
-    const reviewAnswers = Array.from(
-        reviewForm.querySelectorAll('input[type="checkbox"]')
-    ).map((checkbox) => checkbox.checked);
-
-    const reviewData = {
-        checklist: reviewAnswers,
-        improvements
-    };
-
-    if (saveData("day-5-review", reviewData)) {
-        document.querySelector("#general-status").textContent =
-            "Day 5 code review saved.";
+    if (saveData("day-5-review", data)) {
+        updateStatus("Day 5 code review saved.");
     } else {
-        document.querySelector("#general-status").textContent =
-            "Unable to save your code review.";
+        updateStatus("Unable to save your code review.");
     }
 });
 
-// RESTORE DAY 4 AND DAY 5 WORK
-
-function restoreReviewWork() {
-    document.querySelector("#refactor-original").value =
-        loadData("day-4-original", "");
-
-    document.querySelector("#refactor-improved").value =
-        loadData("day-4-improved", "");
-
-    document.querySelector("#refactor-reflection").value =
-        loadData("day-4-reflection", "");
-
-    const savedReview = loadData("day-5-review", null);
-
-    if (savedReview) {
-        const reviewCheckboxes = reviewForm.querySelectorAll(
-            'input[type="checkbox"]'
-        );
-
-        reviewCheckboxes.forEach((checkbox, index) => {
-            checkbox.checked = Boolean(savedReview.checklist[index]);
-        });
-
-        reviewImprovements.value = savedReview.improvements || "";
-    }
-}
-
-restoreReviewWork();
+restoreReviewData();
