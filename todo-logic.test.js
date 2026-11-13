@@ -5,7 +5,7 @@ import {
     deleteTodo,
     filterTodos,
     toggleTodo,
-} from "../js/todo-logic.js";
+} from "./todo-logic.js";
 
 const sampleTodos = [
     { id: 1, text: "Read", completed: false },
