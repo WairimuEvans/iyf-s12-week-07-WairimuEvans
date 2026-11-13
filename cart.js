@@ -1,119 +1,236 @@
-const CART_KEY = "week7_shopping_cart";
-const state = {
-    products: [
-        { id: 1, name: "Mandazi (pack of 6)", price: 120 },
-        { id: 2, name: "Chapati (pack of 5)", price: 150 },
-        { id: 3, name: "Tea leaves 250g", price: 180 },
-    ],
-    cart: loadCart(),
-};
+class Cart {
+    constructor(products, storageKey = "week7_shopping_cart") {
+        this.products = products;
+        this.storageKey = storageKey;
+        this.items = this.load();
+    }
 
-function loadCart() {
-    try {
-        const savedCart = JSON.parse(localStorage.getItem(CART_KEY) ?? "[]");
-        if (!Array.isArray(savedCart)) return [];
-        return savedCart.filter((item) =>
-            Number.isInteger(item.productId) && Number.isInteger(item.quantity) && item.quantity > 0
+    load() {
+        try {
+            const savedItems = JSON.parse(
+                localStorage.getItem(this.storageKey) ?? "[]"
+            );
+
+            if (!Array.isArray(savedItems)) return [];
+
+            return savedItems.filter((item) => {
+                const productExists = this.products.some(
+                    (product) => product.id === item.productId
+                );
+
+                return (
+                    productExists &&
+                    Number.isInteger(item.quantity) &&
+                    item.quantity > 0
+                );
+            });
+        } catch (error) {
+            console.error("Unable to load cart:", error);
+            return [];
+        }
+    }
+
+    save() {
+        try {
+            localStorage.setItem(
+                this.storageKey,
+                JSON.stringify(this.items)
+            );
+            return true;
+        } catch (error) {
+            console.error("Unable to save cart:", error);
+            return false;
+        }
+    }
+
+    addItem(productId) {
+        const productExists = this.products.some(
+            (product) => product.id === productId
         );
-    } catch {
-        return [];
+
+        if (!productExists) return;
+
+        const existingItem = this.items.find(
+            (item) => item.productId === productId
+        );
+
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            this.items.push({ productId, quantity: 1 });
+        }
+
+        this.save();
+    }
+
+    updateQuantity(productId, quantity) {
+        if (!Number.isInteger(quantity) || quantity < 0) return;
+
+        if (quantity === 0) {
+            this.removeItem(productId);
+            return;
+        }
+
+        const item = this.items.find(
+            (cartItem) => cartItem.productId === productId
+        );
+
+        if (!item) return;
+
+        item.quantity = quantity;
+        this.save();
+    }
+
+    removeItem(productId) {
+        this.items = this.items.filter(
+            (item) => item.productId !== productId
+        );
+
+        this.save();
+    }
+
+    clear() {
+        this.items = [];
+        this.save();
+    }
+
+    getItemCount() {
+        return this.items.reduce(
+            (count, item) => count + item.quantity,
+            0
+        );
+    }
+
+    getTotal() {
+        return this.items.reduce((total, item) => {
+            const product = this.products.find(
+                (entry) => entry.id === item.productId
+            );
+
+            return total + (product ? product.price * item.quantity : 0);
+        }, 0);
+    }
+
+    getItems() {
+        return this.items.map((item) => {
+            const product = this.products.find(
+                (entry) => entry.id === item.productId
+            );
+
+            return {
+                ...item,
+                product,
+                subtotal: product.price * item.quantity
+            };
+        });
     }
 }
 
-function saveCart() {
-    localStorage.setItem(CART_KEY, JSON.stringify(state.cart));
-}
+const products = [
+    { id: 1, name: "Mandazi (pack of 6)", price: 120 },
+    { id: 2, name: "Chapati (pack of 5)", price: 150 },
+    { id: 3, name: "Tea leaves 250g", price: 180 }
+];
 
-function addToCart(productId) {
-    const existingItem = state.cart.find((item) => item.productId === productId);
-    if (existingItem) {
-        state.cart = state.cart.map((item) => (
-            item.productId === productId ? { ...item, quantity: item.quantity + 1 } : item
-        ));
-    } else {
-        state.cart = [...state.cart, { productId, quantity: 1 }];
-    }
-    commit();
-}
+const cart = new Cart(products);
 
-function updateQuantity(productId, quantity) {
-    if (!Number.isInteger(quantity) || quantity < 0) return;
-    if (quantity === 0) {
-        removeFromCart(productId);
-        return;
-    }
-    state.cart = state.cart.map((item) => (
-        item.productId === productId ? { ...item, quantity } : item
-    ));
-    commit();
-}
+const productsList = document.querySelector("#products");
+const cartList = document.querySelector("#cart-items");
+const cartCount = document.querySelector("#cart-count");
+const cartTotal = document.querySelector("#cart-total");
+const clearCartButton = document.querySelector("#clear-cart");
 
-function removeFromCart(productId) {
-    state.cart = state.cart.filter((item) => item.productId !== productId);
-    commit();
-}
-
-function getCartTotal() {
-    return state.cart.reduce((total, item) => {
-        const product = state.products.find((entry) => entry.id === item.productId);
-        return total + (product ? product.price * item.quantity : 0);
-    }, 0);
-}
-
-function getCartCount() {
-    return state.cart.reduce((count, item) => count + item.quantity, 0);
-}
-
-function commit() {
-    saveCart();
-    render();
-}
-
-function render() {
-    const productsList = document.querySelector("#products");
-    const cartList = document.querySelector("#cart-items");
+function renderProducts() {
     productsList.replaceChildren();
-    cartList.replaceChildren();
 
-    state.products.forEach((product) => {
+    products.forEach((product) => {
         const item = document.createElement("li");
-        item.textContent = `${product.name} — KSh ${product.price}`;
+        const name = document.createElement("span");
         const button = document.createElement("button");
+
+        name.textContent = `${product.name} — KSh ${product.price}`;
+
         button.type = "button";
         button.textContent = "Add to cart";
-        button.addEventListener("click", () => addToCart(product.id));
-        item.append(button);
+        button.addEventListener("click", () => {
+            cart.addItem(product.id);
+            renderCart();
+        });
+
+        item.append(name, button);
         productsList.append(item);
     });
+}
 
-    state.cart.forEach((cartItem) => {
-        const product = state.products.find((entry) => entry.id === cartItem.productId);
-        if (!product) return;
+function renderCart() {
+    cartList.replaceChildren();
+
+    cart.getItems().forEach((cartItem) => {
         const item = document.createElement("li");
-        item.textContent = `${product.name} — KSh ${product.price} × ${cartItem.quantity}`;
+        const details = document.createElement("span");
+
+        details.textContent =
+            `${cartItem.product.name} — KSh ${cartItem.product.price} × ${cartItem.quantity}`;
+
         const decreaseButton = document.createElement("button");
         decreaseButton.type = "button";
         decreaseButton.textContent = "−";
-        decreaseButton.addEventListener("click", () => updateQuantity(product.id, cartItem.quantity - 1));
+        decreaseButton.setAttribute(
+            "aria-label",
+            `Decrease ${cartItem.product.name} quantity`
+        );
+
+        decreaseButton.addEventListener("click", () => {
+            cart.updateQuantity(
+                cartItem.productId,
+                cartItem.quantity - 1
+            );
+            renderCart();
+        });
+
         const increaseButton = document.createElement("button");
         increaseButton.type = "button";
         increaseButton.textContent = "+";
-        increaseButton.addEventListener("click", () => updateQuantity(product.id, cartItem.quantity + 1));
+        increaseButton.setAttribute(
+            "aria-label",
+            `Increase ${cartItem.product.name} quantity`
+        );
+
+        increaseButton.addEventListener("click", () => {
+            cart.updateQuantity(
+                cartItem.productId,
+                cartItem.quantity + 1
+            );
+            renderCart();
+        });
+
         const removeButton = document.createElement("button");
         removeButton.type = "button";
         removeButton.textContent = "Remove";
-        removeButton.addEventListener("click", () => removeFromCart(product.id));
-        item.append(decreaseButton, increaseButton, removeButton);
+
+        removeButton.addEventListener("click", () => {
+            cart.removeItem(cartItem.productId);
+            renderCart();
+        });
+
+        item.append(
+            details,
+            decreaseButton,
+            increaseButton,
+            removeButton
+        );
+
         cartList.append(item);
     });
 
-    document.querySelector("#cart-count").textContent = String(getCartCount());
-    document.querySelector("#cart-total").textContent = getCartTotal().toLocaleString("en-KE");
+    cartCount.textContent = String(cart.getItemCount());
+    cartTotal.textContent = cart.getTotal().toLocaleString("en-KE");
 }
 
-document.querySelector("#clear-cart").addEventListener("click", () => {
-    state.cart = [];
-    commit();
+clearCartButton.addEventListener("click", () => {
+    cart.clear();
+    renderCart();
 });
 
-render();
+renderProducts();
+renderCart();
