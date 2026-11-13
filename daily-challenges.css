@@ -1,0 +1,64 @@
+body {
+    font-family: Arial, sans-serif;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    line-height: 1.6;
+    background: #ffffff;
+    color: #222222;
+    transition: background 0.2s, color 0.2s;
+}
+
+body[data-theme="dark"] {
+    background: #171717;
+    color: #f5f5f5;
+}
+
+a {
+    color: #2563eb;
+}
+
+body[data-theme="dark"] a {
+    color: #93c5fd;
+}
+
+input,
+textarea,
+button {
+    font: inherit;
+    margin: 6px 0;
+    padding: 8px;
+}
+
+textarea,
+input:not([type="checkbox"]) {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+section {
+    padding: 16px 0;
+}
+
+fieldset {
+    margin: 16px 0;
+}
+
+label {
+    display: block;
+    margin: 8px 0;
+}
+
+pre {
+    overflow-x: auto;
+    padding: 12px;
+    background: #eeeeee;
+    color: #222222;
+}
+
+body[data-theme="dark"] pre {
+    background: #303030;
+    color: #ffffff;
+}
