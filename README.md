@@ -14,11 +14,11 @@ A persistent, modular To-Do List with pure logic functions, ESLint, Prettier and
 6. Open `index.html` using VS Code Live Server.
 
 ## Project areas
-- `js/`: modular To-Do application
-- `cart/`: Lesson 13 shopping cart class build
-- `notes/`: localStorage practice app
-- `session-form/`: sessionStorage autosave exercise
-- `daily-challenges/`: five daily challenge exercises
+- js: modular To-Do application
+- cart: Lesson 13 shopping cart class build
+- notes: localStorage practice app
+- session-form: sessionStorage autosave exercise
+- daily-challenges: five daily challenge exercises
 
 ## Collaboration
 
