@@ -29,8 +29,10 @@
         <section id="day-1">
             <h2>Day 1: Theme Persistence</h2>
 
-            <p>Switch between light and dark themes. Your preference
-                should remain after refreshing the page.</p>
+            <p>
+                Switch between light and dark themes. Your preference
+                should remain after refreshing the page.
+            </p>
 
             <button id="theme-toggle" type="button">
                 Switch Theme
@@ -46,8 +48,10 @@
         <section id="day-2">
             <h2>Day 2: Recent Searches</h2>
 
-            <p>Search for something and your five most recent searches
-                will be saved.</p>
+            <p>
+                Search for something and your five most recent searches
+                will be saved.
+            </p>
 
             <form id="search-form">
                 <label for="search-input">Search:</label>
@@ -62,21 +66,24 @@
 
                 <button type="submit">Search</button>
             </form>
+
             <p id="search-result" aria-live="polite"></p>
-           
-             <details id="search-history-section">
+
+            <details id="search-history-section">
                 <summary>Recent Searches</summary>
-                  <ul id="search-history"></ul>
-             </details>
-          </section>
+                <ul id="search-history"></ul>
+            </details>
+        </section>
 
         <hr>
 
         <section id="day-3">
             <h2>Day 3: Form Auto-Save</h2>
 
-            <p>Your information is automatically saved every five
-                seconds and restored when you return.</p>
+            <p>
+                Your information is automatically saved every five
+                seconds and restored when you return.
+            </p>
 
             <form id="autosave-form">
                 <label for="user-name">Name:</label>
@@ -84,6 +91,7 @@
                     type="text"
                     id="user-name"
                     name="name"
+                    autocomplete="name"
                     required
                 >
 
@@ -92,6 +100,7 @@
                     type="email"
                     id="user-email"
                     name="email"
+                    autocomplete="email"
                     required
                 >
 
@@ -126,27 +135,34 @@
 
             <h3>Original code</h3>
 
-            <pre><code>
-function c(a,b){
-    return a+b;
+            <pre><code>function c(a, b) {
+    return a + b;
 }
 
-function d(x){
-    return x*2;
-}
-            </code></pre>
+function d(x) {
+    return x * 2;
+}</code></pre>
 
             <h3>Refactored code</h3>
 
-            <pre><code>
+            <pre><code>// Adds two numbers after validating the inputs.
 function calculateSum(firstNumber, secondNumber) {
+    if (!Number.isFinite(firstNumber) ||
+        !Number.isFinite(secondNumber)) {
+        throw new TypeError("Both values must be valid numbers.");
+    }
+
     return firstNumber + secondNumber;
 }
 
+// Doubles a number after validating the input.
 function doubleNumber(number) {
+    if (!Number.isFinite(number)) {
+        throw new TypeError("The value must be a valid number.");
+    }
+
     return number * 2;
-}
-            </code></pre>
+}</code></pre>
 
             <h3>Your refactoring reflection</h3>
 
@@ -204,6 +220,7 @@ function doubleNumber(number) {
                     rows="5"
                     placeholder="Explain your improvements..."
                 ></textarea>
+
                 <button type="submit">Save Refactoring Work</button>
             </form>
         </section>
@@ -269,8 +286,11 @@ function doubleNumber(number) {
                 <textarea
                     id="review-improvements"
                     rows="8"
-                    placeholder="1. Improve error handling...&#10;2. Organize the code...&#10;3. Improve naming..."
+                    placeholder="1. Improve error handling...
+2. Organize the code...
+3. Improve naming..."
                 ></textarea>
+
                 <button type="submit">Submit Code Review</button>
             </form>
         </section>
@@ -280,6 +300,7 @@ function doubleNumber(number) {
         <p id="general-status" aria-live="polite">
             Daily challenges ready.
         </p>
+
         <p>Week 7 - JavaScript Best Practices</p>
     </footer>
 </body>
