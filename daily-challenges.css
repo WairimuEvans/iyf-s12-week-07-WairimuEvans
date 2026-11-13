@@ -22,6 +22,34 @@ body[data-theme="dark"] a {
     color: #93c5fd;
 }
 
+#search-history-section {
+    margin-top: 1rem;
+}
+
+#search-history-section summary {
+    cursor: pointer;
+    font-weight: bold;
+    padding: 0.5rem;
+}
+
+#search-history {
+    list-style: none;
+    padding: 0;
+}
+
+#search-history li {
+    margin: 0.35rem 0;
+}
+
+#search-history button {
+    width: 100%;
+    text-align: left;
+}
+
+#search-history-section[hidden] {
+    display: none;
+}
+
 input,
 textarea,
 button {
