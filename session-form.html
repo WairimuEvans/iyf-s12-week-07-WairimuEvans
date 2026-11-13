@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Form Autosave</title>
+    <script type="module" src="form.js"></script>
+</head>
+<body>
+    <main>
+        <h1>Contact form — session autosave</h1>
+        <form id="contact-form">
+            <label for="contact-name">Name</label>
+            <input id="contact-name" name="name" required>
+            <label for="contact-email">Email</label>
+            <input id="contact-email" name="email" type="email" required>
+            <label for="contact-message">Message</label>
+            <textarea id="contact-message" name="message" required></textarea>
+            <button type="submit">Submit</button>
+        </form>
+        <p id="form-status" role="status"></p>
+    </main>
+</body>
+</html>
