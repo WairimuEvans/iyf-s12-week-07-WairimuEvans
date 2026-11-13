@@ -1,0 +1,26 @@
+:root {
+    color-scheme: light;
+    font-family: Arial, sans-serif;
+    background: #f3f4f6;
+    color: #1f2937;
+}
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    background: #111827;
+    color: #f9fafb;
+}
+* { box-sizing: border-box; }
+body { max-width: 760px; margin: 0 auto; padding: 1.5rem; }
+.site-header, .filters, .todo-item { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+main { background: Canvas; color: CanvasText; padding: 1.5rem; border-radius: 0.75rem; }
+form { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+form label { flex-basis: 100%; }
+input { flex: 1; min-width: 12rem; padding: 0.65rem; }
+button { padding: 0.6rem 0.85rem; cursor: pointer; }
+.filters { justify-content: flex-start; margin: 1rem 0; }
+#todo-list { padding: 0; list-style: none; }
+.todo-item { border-bottom: 1px solid #9ca3af; padding: 0.75rem 0; }
+.todo-item span { flex: 1; overflow-wrap: anywhere; }
+.todo-item.completed span { text-decoration: line-through; opacity: 0.65; }
+#todo-feedback { min-height: 1.25rem; }
+footer { text-align: center; margin-top: 1.5rem; }
