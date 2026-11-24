@@ -139,6 +139,8 @@ const formResult = document.querySelector("#form-result");
 
 const autosaveKey = "daily-form-data";
 
+let autosaveInterval = null;
+
 function collectFormData() {
     return {
         name: autosaveForm.elements.namedItem("name").value,
@@ -152,9 +154,14 @@ function restoreFormData() {
 
     if (!savedData || typeof savedData !== "object") return;
 
-    autosaveForm.elements.namedItem("name").value = savedData.name || "";
-    autosaveForm.elements.namedItem("email").value = savedData.email || "";
-    autosaveForm.elements.namedItem("message").value = savedData.message || "";
+    autosaveForm.elements.namedItem("name").value =
+        typeof savedData.name === "string" ? savedData.name : "";
+
+    autosaveForm.elements.namedItem("email").value =
+        typeof savedData.email === "string" ? savedData.email : "";
+
+    autosaveForm.elements.namedItem("message").value =
+        typeof savedData.message === "string" ? savedData.message : "";
 
     autosaveStatus.textContent = "Previous form data restored.";
 }
@@ -168,35 +175,62 @@ function autoSaveForm() {
     }
 }
 
+function startAutosave() {
+    if (autosaveInterval !== null) return;
+
+    autosaveInterval = setInterval(autoSaveForm, 5000);
+}
+
+function stopAutosave() {
+    if (autosaveInterval === null) return;
+
+    clearInterval(autosaveInterval);
+    autosaveInterval = null;
+}
+
+function clearSavedDraft() {
+    try {
+        localStorage.removeItem(autosaveKey);
+        autosaveStatus.textContent = "Saved form data cleared.";
+        return true;
+    } catch (error) {
+        console.error("Unable to clear saved form data:", error);
+        autosaveStatus.textContent = "Unable to clear saved form data.";
+        return false;
+    }
+}
+
 restoreFormData();
+startAutosave();
 
-// Save every five seconds and whenever the user changes a field.
-const autosaveInterval = setInterval(autoSaveForm, 5000);
-
-autosaveForm.addEventListener("input", autoSaveForm);
+autosaveForm.addEventListener("input", () => {
+    autoSaveForm();
+    startAutosave();
+});
 
 autosaveForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
     if (!autosaveForm.reportValidity()) return;
 
-    try {
-        localStorage.removeItem(autosaveKey);
-
-        autosaveForm.reset();
-        clearInterval(autosaveInterval);
-
-        formResult.textContent = "Form submitted successfully.";
-        autosaveStatus.textContent = "Saved form data cleared.";
-    } catch (error) {
-        console.error("Unable to clear saved form data:", error);
-        formResult.textContent = "Unable to clear saved form data.";
+    if (!clearSavedDraft()) {
+        formResult.textContent =
+            "Submission completed, but saved data could not be cleared.";
+        return;
     }
+
+    stopAutosave();
+    autosaveForm.reset();
+
+    formResult.textContent = "Form submitted successfully.";
 });
 
 autosaveForm.addEventListener("reset", () => {
+    clearSavedDraft();
+    stopAutosave();
     formResult.textContent = "Form fields cleared.";
 });
+
 
 // DAY 4: REFACTOR CHALLENGE
 
