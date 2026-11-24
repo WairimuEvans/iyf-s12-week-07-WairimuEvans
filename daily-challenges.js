@@ -74,6 +74,10 @@ let recentSearches = loadData("recent-searches", []);
 
 if (!Array.isArray(recentSearches)) {
     recentSearches = [];
+} else {
+    recentSearches = recentSearches.filter(
+        (item) => typeof item === "string"
+    );
 }
 
 function displaySearchHistory() {
