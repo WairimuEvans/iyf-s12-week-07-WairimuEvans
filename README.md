@@ -1,4 +1,3 @@
-
 # Week 7 — JavaScript Best Practices
 
 **Repository:** `iyf-s12-week-07-WairimuEvans`
@@ -13,8 +12,7 @@ and unit testing.
 
 The To-Do application supports:
 
-- Adding tasks
-- Completing and deleting tasks
+- Adding, completing, and deleting tasks
 - Filtering all, active, and completed tasks
 - Persisting tasks with localStorage
 - Remembering the selected theme and filter
@@ -24,15 +22,9 @@ The To-Do application supports:
 
 ### Shopping Cart
 
-A shopping cart implemented with a JavaScript class.
-
-Features include:
-
-- Adding products
-- Updating product quantities
-- Removing products
-- Calculating item count and total price
-- Persisting cart contents with localStorage
+A shopping cart implemented with a JavaScript class. It supports adding products,
+updating quantities, removing items, calculating item counts and totals, and
+persisting cart contents with localStorage.
 
 ### Storage Exercises
 
@@ -41,7 +33,8 @@ Features include:
 
 ### Daily Challenges
 
-`daily-challenges.html`, `daily-challenges.js`, and `daily-challenges.css` contain:
+`daily-challenges.html`, `daily-challenges.js`, and
+`daily-challenges.css` contain:
 
 1. Theme persistence
 2. Recent search history
@@ -51,12 +44,8 @@ Features include:
 
 ### Debugging
 
-`debugging.js` demonstrates:
-
-- Logging variables
-- Inspecting arrays
-- Handling errors
-- Tracking program execution
+`debugging.js` demonstrates variable logging, array inspection, error handling,
+and execution-flow tracing.
 
 ## Project Structure
 
@@ -66,17 +55,15 @@ All project files are kept in the repository root.
 |---|---|
 | `index.html` | To-Do application page |
 | `app.js` | To-Do event handling |
-| `ui.js` | Rendering and feedback |
+| `ui.js` | Rendering, theme control, and feedback |
 | `state.js` | Central application state |
-| `storage.js` | localStorage utilities |
+| `storage.js` | Safe localStorage utilities |
 | `todo-logic.js` | Reusable To-Do functions |
-| `todo-logic.test.js` | Unit tests |
-| `cart.html` | Shopping Cart page |
-| `cart.js` | Shopping Cart class and UI |
-| `notes.html` | Notes page |
-| `notes.js` | Notes persistence |
-| `session-form.html` | Session form page |
-| `form.js` | Session form persistence |
+| `todo-logic.test.js` | Unit tests for To-Do logic |
+| `storage.test.js` | Unit tests for storage helpers |
+| `cart.html` / `cart.js` | Shopping cart page and functionality |
+| `notes.html` / `notes.js` | Persistent notes exercise |
+| `session-form.html` / `form.js` | Session form recovery exercise |
 | `daily-challenges.html` | Daily challenges page |
 | `daily-challenges.js` | Daily challenge functionality |
 | `daily-challenges.css` | Daily challenge styling |
@@ -99,19 +86,21 @@ All project files are kept in the repository root.
 npm install
 ```
 
-## Run the Tests
+## Quality Checks
+
+Run the unit tests:
 
 ```bash
 npm test
 ```
 
-## Run ESLint
+Run ESLint:
 
 ```bash
 npm run lint
 ```
 
-## Format the Code
+Format the source files:
 
 ```bash
 npm run format
@@ -119,7 +108,7 @@ npm run format
 
 ## Run the Applications
 
-Open the relevant HTML file with VS Code Live Server:
+Open each relevant HTML file with VS Code Live Server:
 
 - `index.html`
 - `cart.html`
@@ -129,6 +118,9 @@ Open the relevant HTML file with VS Code Live Server:
 
 ## Collaboration
 
+Use feature branches for changes. Open a pull request against `main` and
+include a short summary of the change plus the tests and manual checks performed.
+Do not merge a pull request until it has been reviewed.
 
 ## Author
 
