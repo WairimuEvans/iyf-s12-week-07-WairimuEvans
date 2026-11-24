@@ -8,7 +8,7 @@ const THEME_KEY = "week7_theme";
 function loadTodos() {
     const savedTodos = getFromStorage(TODOS_KEY, []);
 
-    if (!Array.isArray(savedTodos)) return [];
+    if (!Array.isArray(savedTodos)) {return [];}
 
     return savedTodos.filter((todo) => {
         return (
@@ -68,7 +68,7 @@ export function subscribe(listener) {
 }
 
 export function createTodo(text) {
-    if (typeof text !== "string" || !text.trim()) return;
+    if (typeof text !== "string" || !text.trim()) {return;}
 
     state.todos = addTodo(state.todos, text);
     publish();
@@ -87,7 +87,7 @@ export function removeTodo(id) {
 export function changeFilter(filter) {
     const allowedFilters = ["all", "active", "completed"];
 
-    if (!allowedFilters.includes(filter)) return;
+    if (!allowedFilters.includes(filter)) {return;}
 
     state.filter = filter;
     publish();

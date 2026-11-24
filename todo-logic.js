@@ -10,7 +10,7 @@ export function addTodo(
 
     const cleanText = text.trim();
 
-    if (!cleanText) return todos;
+    if (!cleanText) {return todos;}
 
     return [
         ...todos,
@@ -34,8 +34,8 @@ export function deleteTodo(todos, id) {
 }
 
 export function filterTodos(todos, filter) {
-    if (filter === "active") return todos.filter((todo) => !todo.completed);
-    if (filter === "completed") return todos.filter((todo) => todo.completed);
+    if (filter === "active") {return todos.filter((todo) => !todo.completed);}
+    if (filter === "completed") {return todos.filter((todo) => todo.completed);}
     return [...todos];
 }
 

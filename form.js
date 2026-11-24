@@ -52,7 +52,7 @@ fields.forEach((field) => {
 form.addEventListener("submit", (event) => {
     event.preventDefault();
 
-    if (!form.reportValidity()) return;
+    if (!form.reportValidity()) {return;}
 
     clearSavedFields();
     form.reset();

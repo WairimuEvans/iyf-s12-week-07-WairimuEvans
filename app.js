@@ -33,9 +33,9 @@ todoForm.addEventListener("submit", (event) => {
 
 todoList.addEventListener("click", (event) => {
     const action = event.target.dataset.action;
-    if (!action) return;
+    if (!action) {return;}
     const item = event.target.closest("[data-id]");
-    if (!item) return;
+    if (!item) {return;}
     const id = Number(item.dataset.id);
     if (action === "delete") {
         removeTodo(id);
@@ -44,14 +44,14 @@ todoList.addEventListener("click", (event) => {
 });
 
 todoList.addEventListener("change", (event) => {
-    if (event.target.dataset.action !== "toggle") return;
+    if (event.target.dataset.action !== "toggle") {return;}
     const item = event.target.closest("[data-id]");
-    if (item) changeTodoStatus(Number(item.dataset.id));
+    if (item) {changeTodoStatus(Number(item.dataset.id));}
 });
 
 filterNavigation.addEventListener("click", (event) => {
     const filter = event.target.dataset.filter;
-    if (filter) changeFilter(filter);
+    if (filter) {changeFilter(filter);}
 });
 
 themeToggle.addEventListener("click", () => {

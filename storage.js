@@ -11,7 +11,7 @@ export function saveToStorage(key, value) {
 export function getFromStorage(key, defaultValue = null) {
     try {
         const storedValue = localStorage.getItem(key);
-        if (storedValue === null) return defaultValue;
+        if (storedValue === null) {return defaultValue;}
         return JSON.parse(storedValue);
     } catch (error) {
         console.warn(`Unable to read ${key} from localStorage:`, error);

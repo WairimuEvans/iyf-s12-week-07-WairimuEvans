@@ -11,7 +11,7 @@ class Cart {
                 localStorage.getItem(this.storageKey) ?? "[]"
             );
 
-            if (!Array.isArray(savedItems)) return [];
+            if (!Array.isArray(savedItems)) {return [];}
 
             return savedItems.filter((item) => {
                 const productExists = this.products.some(
@@ -48,7 +48,7 @@ class Cart {
             (product) => product.id === productId
         );
 
-        if (!productExists) return;
+        if (!productExists) {return;}
 
         const existingItem = this.items.find(
             (item) => item.productId === productId
@@ -64,7 +64,7 @@ class Cart {
     }
 
     updateQuantity(productId, quantity) {
-        if (!Number.isInteger(quantity) || quantity < 0) return;
+        if (!Number.isInteger(quantity) || quantity < 0) {return;}
 
         if (quantity === 0) {
             this.removeItem(productId);
@@ -75,7 +75,7 @@ class Cart {
             (cartItem) => cartItem.productId === productId
         );
 
-        if (!item) return;
+        if (!item) {return;}
 
         item.quantity = quantity;
         this.save();

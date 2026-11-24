@@ -156,7 +156,7 @@ function collectFormData() {
 function restoreFormData() {
     const savedData = loadData(autosaveKey, null);
 
-    if (!savedData || typeof savedData !== "object") return;
+    if (!savedData || typeof savedData !== "object") {return;}
 
     autosaveForm.elements.namedItem("name").value =
         typeof savedData.name === "string" ? savedData.name : "";
@@ -180,13 +180,13 @@ function autoSaveForm() {
 }
 
 function startAutosave() {
-    if (autosaveInterval !== null) return;
+    if (autosaveInterval !== null) {return;}
 
     autosaveInterval = setInterval(autoSaveForm, 5000);
 }
 
 function stopAutosave() {
-    if (autosaveInterval === null) return;
+    if (autosaveInterval === null) {return;}
 
     clearInterval(autosaveInterval);
     autosaveInterval = null;
@@ -215,7 +215,7 @@ autosaveForm.addEventListener("input", () => {
 autosaveForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
-    if (!autosaveForm.reportValidity()) return;
+    if (!autosaveForm.reportValidity()) {return;}
 
     if (!clearSavedDraft()) {
         formResult.textContent =
@@ -262,7 +262,7 @@ function collectRefactorData() {
 function restoreRefactorData() {
     const savedData = loadData("day-4-refactor", null);
 
-    if (!savedData) return;
+    if (!savedData) {return;}
 
     refactorOriginal.value = savedData.original || "";
     refactorImproved.value = savedData.improved || "";
@@ -313,7 +313,7 @@ function collectReviewData() {
 function restoreReviewData() {
     const savedData = loadData("day-5-review", null);
 
-    if (!savedData) return;
+    if (!savedData) {return;}
 
     reviewCheckboxes.forEach((checkbox, index) => {
         checkbox.checked = Boolean(savedData.checklist?.[index]);
