@@ -4,14 +4,20 @@ const todoList = document.querySelector("#todo-list");
 const todoCount = document.querySelector("#todo-count");
 const todoFeedback = document.querySelector("#todo-feedback");
 const filterButtons = document.querySelectorAll("[data-filter]");
+const themeToggle = document.querySelector("#theme-toggle");
 
 export function render(state) {
     const { todos, filter, theme } = state;
 
-    // Apply the selected theme.
     document.documentElement.dataset.theme = theme;
 
-    // Update the active filter button.
+    themeToggle.textContent =
+        theme === "dark" ? "Switch to light theme" : "Switch to dark theme";
+    themeToggle.setAttribute(
+        "aria-label",
+        theme === "dark" ? "Switch to light theme" : "Switch to dark theme"
+    );
+
     filterButtons.forEach((button) => {
         button.setAttribute(
             "aria-pressed",
@@ -19,7 +25,6 @@ export function render(state) {
         );
     });
 
-    // Display only tasks matching the selected filter.
     const visibleTodos = filterTodos(todos, filter);
 
     todoList.replaceChildren();
@@ -66,7 +71,6 @@ export function render(state) {
         todoList.append(item);
     });
 
-    // Update the remaining task count.
     const remainingTasks = countActiveTodos(todos);
     todoCount.textContent =
         `${remainingTasks} ${remainingTasks === 1 ? "task" : "tasks"} remaining`;

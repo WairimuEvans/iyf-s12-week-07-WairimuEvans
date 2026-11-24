@@ -20,5 +20,11 @@ export function getFromStorage(key, defaultValue = null) {
 }
 
 export function removeFromStorage(key) {
-    localStorage.removeItem(key);
+    try {
+        localStorage.removeItem(key);
+        return true;
+    } catch (error) {
+        console.error(`Unable to remove ${key} from localStorage:`, error);
+        return false;
+    }
 }
