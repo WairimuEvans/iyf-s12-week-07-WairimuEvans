@@ -1,7 +1,26 @@
-export function addTodo(todos, text, id = Date.now(), createdAt = new Date().toISOString()) {
+export function addTodo(
+    todos,
+    text,
+    id = Date.now(),
+    createdAt = new Date().toISOString()
+) {
+    if (!Array.isArray(todos) || typeof text !== "string") {
+        return todos;
+    }
+
     const cleanText = text.trim();
+
     if (!cleanText) return todos;
-    return [...todos, { id, text: cleanText, completed: false, createdAt }];
+
+    return [
+        ...todos,
+        {
+            id,
+            text: cleanText,
+            completed: false,
+            createdAt
+        }
+    ];
 }
 
 export function toggleTodo(todos, id) {
